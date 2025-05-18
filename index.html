@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//pt-BR">
 <head>
-    <link rel="shortcut icon" type="image/jpg" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg">
-    <link rel="icon" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg" type="image/jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen" />
-  <title>DEPOSITO e TABACARIA</title>
+<link rel="shortcut icon" type="image/jpg" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg">
+<link rel="icon" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg" type="image/jpg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen" />
+  <title>Loja de Produtos</title>
   <style>
     :root {
       --cor-primaria: #2c3e50;
@@ -393,95 +393,101 @@
   </div>
 
   <script>
-    function atualizarContador(itens) {
-      document.getElementById('totalItens').textContent = itens;
-    }
+  let totalItens = 0;
+  let valorTotal = 0;
+  let taxaEntrega = 0;
 
-    let totalItens = 0;
-    let valorTotal = 0;
+  function atualizarContador(itens) {
+    document.getElementById('totalItens').textContent = itens;
+  }
 
-    function adicionarItem(nome, valor) {
-  const container = document.getElementById('itensSelecionados');
-  const div = document.createElement('div');
-  div.className = 'item-carrinho';
-  div.setAttribute('data-valor', valor); // Guarda o valor para possível remoção
-  div.innerHTML = `<span>${nome} - R$ ${valor.toFixed(2)}</span><button class="btn-remover" onclick="removerItem(this)">x</button>`;
-  container.appendChild(div);
-  totalItens++;
-  valorTotal += valor;
-  atualizarContador(totalItens);
-  atualizarTotal();
-}
-    function removerItem(botao) {
-  const item = botao.parentElement;
-  const valorItem = parseFloat(item.getAttribute('data-valor'));
-  item.remove();
-  totalItens--;
-  if (totalItens < 0) totalItens = 0;
-  valorTotal -= valorItem;
-  atualizarContador(totalItens);
-  atualizarTotal();
-}
-    function abrirModalPix() {
-      document.getElementById('modalPix').style.display = 'flex';
-    }
+  function adicionarItem(nome, valor) {
+    const container = document.getElementById('itensSelecionados');
+    const div = document.createElement('div');
+    div.className = 'item-carrinho';
+    div.setAttribute('data-valor', valor);
+    div.innerHTML = `<span>${nome} - R$ ${valor.toFixed(2)}</span><button class="btn-remover" onclick="removerItem(this)">x</button>`;
+    container.appendChild(div);
+    totalItens++;
+    valorTotal += valor;
+    atualizarContador(totalItens);
+    atualizarTotal();
+  }
 
-    function abrirModalTaxas() {
-      document.getElementById('modalTaxas').style.display = 'flex';
-    }
+  function removerItem(botao) {
+    const item = botao.parentElement;
+    const valorItem = parseFloat(item.getAttribute('data-valor'));
+    item.remove();
+    totalItens = Math.max(0, totalItens - 1);
+    valorTotal -= valorItem;
+    atualizarContador(totalItens);
+    atualizarTotal();
+  }
 
-    function copiarPix() {
-      const pix = document.getElementById('chavePix').innerText;
-      navigator.clipboard.writeText(pix).then(() => {
-        alert("Pix copiado com sucesso!");
-      });
-    }
+  function abrirModalPix() {
+    document.getElementById('modalPix').style.display = 'flex';
+  }
 
-    function calcularTaxaEntrega() {
-      const now = new Date();
-      const hora = now.getHours();
-      let taxa = 0;
-      if (hora >= 6 && hora < 18) taxa = 10;
-      else if (hora >= 19 && hora < 23) taxa = 15;
-      else taxa = 20;
-      document.getElementById('taxaEntrega').textContent = `Taxa R$ ${taxa.toFixed(2)}`;
-    }
-    function atualizarTotal() {
-  const taxaTexto = document.getElementById('taxaEntrega').textContent;
-  const taxa = parseFloat(taxaTexto.replace('R$ ', '').replace(',', '.')) || 0;
-  const totalFinal = valorTotal + taxa;
-  document.getElementById('valorTotal').textContent = `Total: R$ ${totalFinal.toFixed(2)}`;
-}
-function enviarPedidoWhatsApp() {
-  const itens = document.querySelectorAll('.item-carrinho span');
-  let mensagem = "Pedido:\n";
+  function abrirModalTaxas() {
+    document.getElementById('modalTaxas').style.display = 'flex';
+  }
 
-  itens.forEach(item => {
-    mensagem += `- ${item.textContent}\n`;
-  });
- const endereco ="*Endreco para Retirada* \nRua nova do Calabar 77 Calabar"
-  const taxa = document.getElementById('taxaEntrega').textContent;
-  const total = document.getElementById('valorTotal').textContent;
+  function copiarPix() {
+    const pix = document.getElementById('chavePix').innerText;
+    navigator.clipboard.writeText(pix).then(() => {
+      alert("Pix copiado com sucesso!");
+    });
+  }
 
-  mensagem += `\n${taxa}`;
-  mensagem += `\n${total}`;
-  mensagem += `\n\n${endereco}`;
+  function calcularTaxaEntrega() {
+    const now = new Date();
+    const hora = now.getHours();
 
-  const url = `https://wa.me/71991585904?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, '_blank');
-}
-function abrirModal() {
-      document.getElementById("meuModal").style.display = "flex";
-    }
+    if (hora >= 6 && hora < 18) taxaEntrega = 10;
+    else if (hora >= 19 && hora < 23) taxaEntrega = 15;
+    else taxaEntrega = 20;
 
-    function fecharModal() {
-      document.getElementById("meuModal").style.display = "none";
-    }
+    document.getElementById('taxaEntrega').textContent = `Taxa R$ ${taxaEntrega.toFixed(2)}`;
+    atualizarTotal(); // Atualiza o total assim que a taxa for calculada
+  }
 
-atualizarTotal()
-  </script>
+  function atualizarTotal() {
+    const totalFinal = valorTotal + taxaEntrega;
+    document.getElementById('valorTotal').textContent = `Total: R$ ${totalFinal.toFixed(2)}`;
+  }
+
+  function enviarPedidoWhatsApp() {
+    const itens = document.querySelectorAll('.item-carrinho span');
+    let mensagem = "Pedido:\n";
+
+    itens.forEach(item => {
+      mensagem += `- ${item.textContent}\n`;
+    });
+
+    const endereco = "*Endreco para Retirada* \nRua nova do Calabar 77 Calabar";
+    const taxa = `Taxa R$ ${taxaEntrega.toFixed(2)}`;
+    const total = `Total: R$ ${(valorTotal + taxaEntrega).toFixed(2)}`;
+
+    mensagem += `\n${taxa}`;
+    mensagem += `\n${total}`;
+    mensagem += `\n\n${endereco}`;
+
+    const url = `https://wa.me/71991585904?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+  }
+
+  function abrirModal() {
+    document.getElementById("meuModal").style.display = "flex";
+  }
+
+  function fecharModal() {
+    document.getElementById("meuModal").style.display = "none";
+  }
+
+  // Executa ao carregar a página
+  calcularTaxaEntrega();
+</script>
 
 </body>
 
 </html>
-l
