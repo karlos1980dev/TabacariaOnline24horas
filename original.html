@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//pt-BR">
+<head>
+<link rel="shortcut icon" type="image/jpg" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg">
+<link rel="icon" href="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/tabacaria.jpg" type="image/jpg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen" />
+  <title>Loja de Produtos</title>
+  <style>
+    :root {
+      --cor-primaria: #2c3e50;
+      --cor-secundaria: #ecf0f1;
+      --cor-destaque: #3498db;
+      --cor-sucesso: #2ecc71;
+      --cor-perigo: #e74c3c;
+      --cor-fundo: tomato;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--cor-fundo);
+      color: var(--cor-primaria);
+      padding-bottom: 220px;
+    }
+
+    h2 {
+      margin-left: 20px;
+      margin-top: 30px;
+      font-size: 1.5em;
+      color: var(--cor-primaria);
+    }
+
+    .categoria {
+      margin-bottom: 30px;
+    }
+
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding: 15px 20px;
+    }
+
+    .carousel img {
+      border-radius: 10px;
+      width: 130px;
+      height: 110px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .carousel img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #carrinho {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      border-top: 2px solid var(--cor-destaque);
+      padding: 20px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    #itensSelecionados {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .item-carrinho {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--cor-secundaria);
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .item-carrinho span {
+      font-weight: bold;
+    }
+
+    .btn-remover {
+      background: var(--cor-perigo);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    #modalPix, #modalTaxas {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .modal-content .fechar-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--cor-perigo);
+      cursor: pointer;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .modal-content button {
+      padding: 12px;
+      width: 100%;
+      margin-top: 8px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-confirmar {
+      background-color: var(--cor-destaque);
+     padding: 12px;
+      width: 100%;
+      margin-top: 8px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer; 
+      color: white;
+    }
+
+    .btn-copiar {
+      background-color: var(--cor-primaria);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background-color: var(--cor-sucesso);
+      color: white;
+    }
+
+    #carrinho p {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    #contadorItens {
+      font-size: 14px;
+      color: var(--cor-primaria);
+      margin-top: 5px;
+    }
+
+    .link-taxa {
+      color: var(--cor-destaque);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+     Estilo do fundo escurecido */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Estilo da caixa do modal */
+    .modal-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .modal-box button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      width: 100%;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .modal-box button:hover {
+      background-color: #1976d2;
+    }
+  </style>
+</head>
+
+<body onload="calcularTaxaEntrega()">
+    
+
+  <!-- Modal -->
+  <div id="meuModal" class="modal-overlay">
+    <div class="modal-box">
+      <p>1° Entrega Valor Minimo e de R$ 50.00!</p>
+      <button onclick="fecharModal()">OK</button>
+    </div>
+  </div>
+  
+<div class="categoria">
+    <h2>Cigarros</h2>
+    <div class="carousel">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(6).jpeg" onclick="adicionarItem('malboro menta+melancia', 15)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(7).jpeg" onclick="adicionarItem('malboro gold', 14)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(8).jpeg" onclick="adicionarItem('malboro red', 14)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(5).jpeg" onclick="adicionarItem('luckstrick', 13)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(9).jpeg" onclick="adicionarItem('carlton', 14)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(10).jpeg" onclick="adicionarItem('hottman', 8)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(11).jpeg" onclick="adicionarItem('hottman', 8)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download.webp" onclick="adicionarItem('winston', 10)">
+
+</div>
+</div>
+
+  <div class="categoria">
+    <h2>Tabacaria</h2>
+    <div class="carousel">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(12).jpeg" onclick="adicionarItem('Amstedan', 23)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(13).jpeg" onclick="adicionarItem('sasso gold', 23)">
+
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(14).jpeg" onclick="adicionarItem('hash ', 25)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(15).jpeg" onclick="adicionarItem('hy tabacco gold', 30)">
+ 
+ <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(16).jpeg" onclick="adicionarItem('hy tabacco organico', 31)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(2).jpeg" onclick="adicionarItem('dublin', 18)">
+
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(3).jpeg" onclick="adicionarItem('tabaqui', 17)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(4).jpeg" onclick="adicionarItem('to na be', 18)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(11).jpeg" onclick="adicionarItem('kumbaia', 13)">
+ 
+</div>
+</div>
+  <div class="categoria">
+    <h2>Seda</h2>
+    <div class="carousel">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(17).jpeg" onclick="adicionarItem('seda tatu ', 5)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(18).jpeg" onclick="adicionarItem('seda tatu', 5)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(19).jpeg" onclick="adicionarItem('seda ocb black', 8)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(20).jpeg" onclick="adicionarItem('seda moon grande', 5)">
+
+<img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(21).jpeg" onclick="adicionarItem('seda c/pinteira grande', 7)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(22).jpeg" onclick="adicionarItem('seda moon g', 4)">
+  
+  
+  
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(22).jpeg" onclick="adicionarItem('seda moon p', 4)">
+  
+  
+  
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(25).jpeg" onclick="adicionarItem('papelito g', 5)">
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(25).jpeg" onclick="adicionarItem('papelito p', 3)">
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(26).jpeg" onclick="adicionarItem('ocb p', 8)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(27).jpeg" onclick="adicionarItem('ocb g', 10)">
+  
+<img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(28).jpeg" onclick="adicionarItem('ocb premiu red', 8)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(29).jpeg" onclick="adicionarItem('king', 4)">
+  
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(30).jpeg" onclick="adicionarItem('moon black', 6)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(31).jpeg" onclick="adicionarItem('moon prata', 4)">
+  
+</div>
+</div>
+<div class="categoria">
+    <h2>Acessórios</h2>
+    <div class="carousel">
+        <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(1)%20(2).jpeg" onclick="adicionarItem('pinteira bico fechado', 13)">
+  
+        <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(23).jpeg" onclick="adicionarItem('pinteira longa', 11)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(24).jpeg" onclick="adicionarItem('pinteira curta', 10)">
+
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(25).jpeg" onclick="adicionarItem('cuia m', 15)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(26).jpeg" onclick="adicionarItem('kunbalino', 13)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(27).jpeg" onclick="adicionarItem('dijacador metal', 45)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(28).jpeg" onclick="adicionarItem('bongo p', 25)">
+ <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(29).jpeg" onclick="adicionarItem('bongo m', 35)">
+  
+   <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(30).jpeg" onclick="adicionarItem('bongo g', 55)">
+  
+  
+   <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(1)%20(3).jpeg" onclick="adicionarItem('triturado plastico', 13)">
+
+
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(1)%20(5).jpeg" onclick="adicionarItem('tesoura', 10)">
+  
+   <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/images%20(1)%20(6).jpeg" onclick="adicionarItem('insquero', 4)">
+
+</div>
+</div>
+  <div class="categoria">
+    <h2>Bebidas</h2>
+    <div class="carousel">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(6).jpeg" onclick="adicionarItem('skin ', 4)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(7).jpeg" onclick="adicionarItem('skol', 4)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(1)%20(8).jpeg" onclick="adicionarItem('itaipava', 4)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20(31).jpeg" onclick="adicionarItem('brahma duplo malte', 7)">
+  
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20().jpeg" onclick="adicionarItem('brahma chopp', 5)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20().jpeg" onclick="adicionarItem('hainekeen long', 14)">
+  <img src="https://raw.githubusercontent.com/karlos1980dev/TabacariaOnline24horas/refs/heads/main/download%20().jpeg" onclick="adicionarItem('bundwaise', 14)">
+ 
+</div>
+</div>
+  
+  <div id="carrinho">
+    <div id="itensSelecionados"></div>
+    <div id="contadorItens">Itens no carrinho: <span id="totalItens">0</span></div>
+    <p><span class="link-taxa" onclick="abrirModalTaxas()">Taxa:</span> <span id="taxaEntrega">R$ 0,00</span></p>
+    <p id="valorTotal">Total: R$ 0,00</p>
+    <button class="btn-confirmar" onclick="abrirModalPix()">Confirmar</button>
+  </div>
+
+  <div id="modalPix">
+    <div class="modal-content">
+      <div class="fechar-modal" onclick="document.getElementById('modalPix').style.display='none'">×</div>
+      <h3>Dados para Entrega</h3>
+      <input type="text" placeholder="Seu nome">
+      <input type="text" placeholder="Bairro">
+      <input type="text" placeholder="Rua">
+      <input type="text" placeholder="Número">
+      <input type="text" placeholder="Referência">
+      <hr>
+      <p><strong>Chave Pix:</strong> <span id="chavePix">71992290058</span></p>
+      <button class="btn-copiar" onclick="copiarPix()">Copiar Pix</button>
+      <button class="btn-whatsapp" onclick="enviarPedidoWhatsApp()">Confimar com a entregar</button>
+    </div>
+  </div>
+
+  <div id="modalTaxas">
+    <div class="modal-content">
+      <div class="fechar-modal" onclick="document.getElementById('modalTaxas').style.display='none'">×</div>
+      <h3>Taxas de Entrega por Horário</h3>
+      <ul>
+        <li>06h às 18h: R$ 10,00</li>
+        <li>19h às 22h: R$ 15,00</li>
+        <li>23h às 05h59: R$ 20,00</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+  let totalItens = 0;
+  let valorTotal = 0;
+  let taxaEntrega = 0;
+
+  function atualizarContador(itens) {
+    document.getElementById('totalItens').textContent = itens;
+  }
+
+  function adicionarItem(nome, valor) {
+    const container = document.getElementById('itensSelecionados');
+    const div = document.createElement('div');
+    div.className = 'item-carrinho';
+    div.setAttribute('data-valor', valor);
+    div.innerHTML = `<span>${nome} - R$ ${valor.toFixed(2)}</span><button class="btn-remover" onclick="removerItem(this)">x</button>`;
+    container.appendChild(div);
+    totalItens++;
+    valorTotal += valor;
+    atualizarContador(totalItens);
+    atualizarTotal();
+  }
+
+  function removerItem(botao) {
+    const item = botao.parentElement;
+    const valorItem = parseFloat(item.getAttribute('data-valor'));
+    item.remove();
+    totalItens = Math.max(0, totalItens - 1);
+    valorTotal -= valorItem;
+    atualizarContador(totalItens);
+    atualizarTotal();
+  }
+
+  function abrirModalPix() {
+    document.getElementById('modalPix').style.display = 'flex';
+  }
+
+  function abrirModalTaxas() {
+    document.getElementById('modalTaxas').style.display = 'flex';
+  }
+
+  function copiarPix() {
+    const pix = document.getElementById('chavePix').innerText;
+    navigator.clipboard.writeText(pix).then(() => {
+      alert("Pix copiado com sucesso!");
+    });
+  }
+
+  function calcularTaxaEntrega() {
+    const now = new Date();
+    const hora = now.getHours();
+
+    if (hora >= 6 && hora < 18) taxaEntrega = 10;
+    else if (hora >= 19 && hora < 23) taxaEntrega = 15;
+    else taxaEntrega = 20;
+
+    document.getElementById('taxaEntrega').textContent = `Taxa R$ ${taxaEntrega.toFixed(2)}`;
+    atualizarTotal(); // Atualiza o total assim que a taxa for calculada
+  }
+
+  function atualizarTotal() {
+    const totalFinal = valorTotal + taxaEntrega;
+    document.getElementById('valorTotal').textContent = `Total: R$ ${totalFinal.toFixed(2)}`;
+  }
+
+  function enviarPedidoWhatsApp() {
+    const itens = document.querySelectorAll('.item-carrinho span');
+    let mensagem = "Pedido:\n";
+
+    itens.forEach(item => {
+      mensagem += `- ${item.textContent}\n`;
+    });
+
+    const endereco = "*Endreco para Retirada* \nRua nova do Calabar 77 Calabar";
+    const taxa = `Taxa R$ ${taxaEntrega.toFixed(2)}`;
+    const total = `Total: R$ ${(valorTotal + taxaEntrega).toFixed(2)}`;
+
+    mensagem += `\n${taxa}`;
+    mensagem += `\n${total}`;
+    mensagem += `\n\n${endereco}`;
+
+    const url = `https://wa.me/71991585904?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+  }
+
+  function abrirModal() {
+    document.getElementById("meuModal").style.display = "flex";
+  }
+
+  function fecharModal() {
+    document.getElementById("meuModal").style.display = "none";
+  }
+
+  // Executa ao carregar a página
+  calcularTaxaEntrega();
+</script>
+
+</body>
+
+</html>
